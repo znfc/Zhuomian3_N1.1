@@ -23,7 +23,6 @@
     <string name="activity_not_found">App nicht installiert</string>
     <string name="safemode_shortcut_error">Im Sicherheitsmodus ist die heruntergeladene App deaktiviert</string>
     <string name="safemode_widget_error">Im abgesicherten Modus deaktivierte Widgets</string>
-    <string name="safemode_widget_error">Im abgesicherten Modus deaktivierte Widgets</string>
     <string name="shortcut_not_available">Verknüpfung nicht verfügbar</string>
     <string name="long_press_widget_to_add">Zur Auswahl eines Widgets berühren und halten.</string>
     <string name="long_accessible_way_to_add">Zum Aufnehmen eines Widgets doppeltippen Sie darauf und lassen den Finger darauf liegen; alternativ nutzen Sie benutzerdefinierte Aktionen.</string>
