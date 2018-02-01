@@ -62,6 +62,10 @@ import java.util.Stack;
 /**
  * Cache of application icons.  Icons can be made from any thread.
  */
+
+/**
+ * 问题1 这个iconCache类看名字是图标缓存，怎么个缓存icon法？缓存到哪里？内存里？还是说将icon保存在类变量里？
+ */
 public class IconCache {
 
     private static final String TAG = "Launcher.IconCache";
@@ -78,6 +82,7 @@ public class IconCache {
 
     @Thunk static final Object ICON_UPDATE_TOKEN = new Object();
 
+    //这个CacheEntry 缓存实体 是每一个icon都会对应一个CacheEntry吗？20171014
     @Thunk static class CacheEntry {
         public Bitmap icon;
         public CharSequence title = "";
@@ -137,6 +142,7 @@ public class IconCache {
         mLowResOptions.inPreferredConfig = Bitmap.Config.RGB_565;
     }
 
+    //为什么是full icon？
     private Drawable getFullResDefaultActivityIcon() {
         return getFullResIcon(Resources.getSystem(), android.R.mipmap.sym_def_app_icon);
     }

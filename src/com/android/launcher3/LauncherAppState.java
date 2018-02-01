@@ -36,7 +36,7 @@ import com.android.launcher3.util.Thunk;
 
 import java.lang.ref.WeakReference;
 
-public class LauncherAppState {
+public class LauncherAppState {//State 状态，状况，情况，陈述，说明，规定
 
     public static final boolean PROFILE_STARTUP = ProviderConfig.IS_DOGFOOD_BUILD;
 
