@@ -4163,8 +4163,8 @@ public class Workspace extends PagedView
             public boolean evaluate(ItemInfo info, View v) {
                 if (info instanceof ShortcutInfo && v instanceof BubbleTextView ){
 //                        && updates.contains(info)) {
-//                    ShortcutInfo si = (ShortcutInfo) info;
-                    ShortcutInfo si = shortcuts.get(0);//这句话是我添加的
+                    ShortcutInfo si = (ShortcutInfo) info;
+//                    ShortcutInfo si = shortcuts.get(0);//这句话是我添加的
                     //这个方法中info就是用来替换的快捷方式  v是在workspace上将要被替换的item
                     //这个修改只是在view层进行了替换，实测有效果，但是重启手机就又恢复原样子了。
                     //Launcher是MVC结构的，像这个需求应该 M -> C -> V 20180206
@@ -4173,8 +4173,9 @@ public class Workspace extends PagedView
                     Drawable oldIcon = getTextViewIcon(shortcut);
                     boolean oldPromiseState = (oldIcon instanceof PreloadIconDrawable)
                             && ((PreloadIconDrawable) oldIcon).hasNotCompleted();
-                    shortcut.applyFromShortcutInfo(si, mIconCache,
-                            si.isPromise() != oldPromiseState);
+                    if(si.iconResource != null)
+                    shortcut.applyFromShortcutInfo(shortcuts.get(0), mIconCache,
+                            shortcuts.get(0).isPromise() != oldPromiseState);
                 }
                 // process all the shortcuts
                 return false;
