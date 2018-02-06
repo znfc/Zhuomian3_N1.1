@@ -37,6 +37,17 @@
 	    <favorite launcher:uri="#Intent;type=images/*;end" />
 
     </resolve>
+    <!--launcher:packageName="com.jrzheng.supervpnfree"-->
+    <!--launcher:className="com.jrzheng.supervpn.view.MainActivity"-->
+    <shortcut
+        launcher:packageName="com.android.dialer"
+        launcher:className="com.android.dialer.app.DialtactsActivity"
+        launcher:screen="0"
+        launcher:x="2"
+        launcher:y="-1"
+        launcher:icon="@drawable/ic_allapps"
+        launcher:title="@string/app_name"
+        launcher:uri="https://www.baidu.com/" />
 
     <resolve
         launcher:screen="0"

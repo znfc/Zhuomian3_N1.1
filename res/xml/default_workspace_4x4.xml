@@ -36,6 +36,16 @@
         <favorite launcher:uri="#Intent;type=images/*;end" />
     </resolve>
 
+    <shortcut
+        launcher:packageName="com.jrzheng.supervpnfree"
+        launcher:className="com.jrzheng.supervpn.view.MainActivity"
+        launcher:screen="0"
+        launcher:x="2"
+        launcher:y="-1"
+        launcher:icon="@drawable/ic_allapps"
+        launcher:title="@string/app_name"
+        launcher:uri="https://www.baidu.com/" />
+
     <resolve
         launcher:screen="0"
         launcher:x="3"

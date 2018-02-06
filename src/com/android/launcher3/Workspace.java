@@ -4119,6 +4119,12 @@ public class Workspace extends PagedView
             for (int itemIdx = 0; itemIdx < itemCount; itemIdx++) {
                 View item = container.getChildAt(itemIdx);
                 ItemInfo info = (ItemInfo) item.getTag();
+                Log.i("zhao11",TAG+" itemIdx:"+itemIdx);
+                if(info instanceof ShortcutInfo){
+                    ShortcutInfo shortcutInfo = (ShortcutInfo)info;
+                    if(shortcutInfo.iconResource != null)
+                        Log.i("zhao11",TAG+" shortcutInfo.iconResource:"+shortcutInfo.iconResource.resourceName);
+                }
                 if (recurse && info instanceof FolderInfo && item instanceof FolderIcon) {
                     FolderIcon folder = (FolderIcon) item;
                     ArrayList<View> folderChildren = folder.getFolder().getItemsInReadingOrder();
@@ -4140,7 +4146,7 @@ public class Workspace extends PagedView
         }
     }
 
-    void updateShortcuts(ArrayList<ShortcutInfo> shortcuts) {
+    void updateShortcuts(final ArrayList<ShortcutInfo> shortcuts) {
         int total  = shortcuts.size();
         final HashSet<ShortcutInfo> updates = new HashSet<ShortcutInfo>(total);
         final HashSet<Long> folderIds = new HashSet<>();
@@ -4151,12 +4157,18 @@ public class Workspace extends PagedView
             folderIds.add(s.container);
         }
 
+        Log.i("zhao11",TAG+" updateShortcuts total:"+total);
         mapOverItems(MAP_RECURSE, new ItemOperator() {
             @Override
             public boolean evaluate(ItemInfo info, View v) {
-                if (info instanceof ShortcutInfo && v instanceof BubbleTextView &&
-                        updates.contains(info)) {
-                    ShortcutInfo si = (ShortcutInfo) info;
+                if (info instanceof ShortcutInfo && v instanceof BubbleTextView ){
+//                        && updates.contains(info)) {
+//                    ShortcutInfo si = (ShortcutInfo) info;
+                    ShortcutInfo si = shortcuts.get(0);//这句话是我添加的
+                    //这个方法中info就是用来替换的快捷方式  v是在workspace上将要被替换的item
+                    //这个修改只是在view层进行了替换，实测有效果，但是重启手机就又恢复原样子了。
+                    //Launcher是MVC结构的，像这个需求应该 M -> C -> V 20180206
+
                     BubbleTextView shortcut = (BubbleTextView) v;
                     Drawable oldIcon = getTextViewIcon(shortcut);
                     boolean oldPromiseState = (oldIcon instanceof PreloadIconDrawable)
