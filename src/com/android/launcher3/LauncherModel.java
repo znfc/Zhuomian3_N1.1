@@ -1149,6 +1149,8 @@ public class LauncherModel extends BroadcastReceiver
 
     @Override
     public void onPackageChanged(String packageName, UserHandleCompat user) {
+        Log.i("zhao11update",TAG+" onPackageAdded:packageName:"+packageName);
+
         int op = PackageUpdatedTask.OP_UPDATE;
         enqueueItemUpdatedTask(new PackageUpdatedTask(op, new String[] { packageName },
                 user));
@@ -1156,13 +1158,16 @@ public class LauncherModel extends BroadcastReceiver
 
     @Override
     public void onPackageRemoved(String packageName, UserHandleCompat user) {
+        Log.i("zhao11update",TAG+" onPackageRemoved:packageName:"+packageName);
         int op = PackageUpdatedTask.OP_REMOVE;
         enqueueItemUpdatedTask(new PackageUpdatedTask(op, new String[] { packageName },
                 user));
     }
 
     @Override
-    public void onPackageAdded(String packageName, UserHandleCompat user) {
+    public void onPackageAdded(String packageName, UserHandleCompat user) {//TODO addzhao 1
+        Log.i("zhao11update",TAG+" onPackageAdded:packageName:"+packageName);
+
         int op = PackageUpdatedTask.OP_ADD;
         enqueueItemUpdatedTask(new PackageUpdatedTask(op, new String[] { packageName },
                 user));
@@ -1171,6 +1176,8 @@ public class LauncherModel extends BroadcastReceiver
     @Override
     public void onPackagesAvailable(String[] packageNames, UserHandleCompat user,
             boolean replacing) {
+        Log.i("zhao11update",TAG+" onPackageAdded:packageName:"+packageNames);
+
         enqueueItemUpdatedTask(
                 new PackageUpdatedTask(PackageUpdatedTask.OP_UPDATE, packageNames, user));
     }
@@ -1750,6 +1757,7 @@ public class LauncherModel extends BroadcastReceiver
                             LauncherSettings.Favorites.OPTIONS);
                     final CursorIconInfo cursorIconInfo = new CursorIconInfo(mContext, c);
 
+                    Log.i("zhao11",TAG+" cursorIconInfo:");
                     final LongSparseArray<UserHandleCompat> allUsers = new LongSparseArray<>();
                     final LongSparseArray<Boolean> quietMode = new LongSparseArray<>();
                     final LongSparseArray<Boolean> unlockedUsers = new LongSparseArray<>();
@@ -2018,6 +2026,9 @@ public class LauncherModel extends BroadcastReceiver
                                     info.intent.putExtra(ItemInfo.EXTRA_PROFILE, serialNumber);
                                     if (info.promisedIntent != null) {
                                         info.promisedIntent.putExtra(ItemInfo.EXTRA_PROFILE, serialNumber);
+                                    }
+                                    if(info.iconResource != null){
+                                        Log.i("zhao11",TAG+" resourceName:"+info.iconResource.resourceName);
                                     }
                                     info.isDisabled |= disabledState;
                                     if (isSafeMode && !Utilities.isSystemApp(context, intent)) {
@@ -2681,6 +2692,7 @@ public class LauncherModel extends BroadcastReceiver
         }
 
         private void updateIconCache() {
+            Log.i("zhao11model",TAG + "updateIconCache()");
             // Ignore packages which have a promise icon.
             HashSet<String> packagesToIgnore = new HashSet<>();
             synchronized (sBgLock) {
@@ -2959,6 +2971,8 @@ public class LauncherModel extends BroadcastReceiver
             final ArrayList<ShortcutInfo> updatedShortcuts,
             final ArrayList<ShortcutInfo> removedShortcuts,
             final UserHandleCompat user) {
+        Log.i("zhao11update",TAG+" bindUpdatedShortcuts");
+        new Exception("zhao11 "+TAG).printStackTrace();
         if (!updatedShortcuts.isEmpty() || !removedShortcuts.isEmpty()) {
             final Callbacks callbacks = getCallback();
             mHandler.post(new Runnable() {
@@ -3029,6 +3043,7 @@ public class LauncherModel extends BroadcastReceiver
         public static final int OP_USER_AVAILABILITY_CHANGE = 7; // user available/unavailable
 
         public PackageUpdatedTask(int op, String[] packages, UserHandleCompat user) {
+            Log.i("zhao11update",TAG + "PackageUpdatedTask: OP:"+op);
             mOp = op;
             mPackages = packages;
             mUser = user;
@@ -3143,7 +3158,7 @@ public class LauncherModel extends BroadcastReceiver
                     public void run() {
                         Callbacks cb = getCallback();
                         if (callbacks == cb && cb != null) {
-                            callbacks.bindAppsUpdated(modifiedFinal);
+                            callbacks.bindAppsUpdated(modifiedFinal);// TODO zhaoupdate
                         }
                     }
                 });
@@ -3156,22 +3171,37 @@ public class LauncherModel extends BroadcastReceiver
                 final ArrayList<LauncherAppWidgetInfo> widgets = new ArrayList<LauncherAppWidgetInfo>();
 
                 synchronized (sBgLock) {
-                    for (ItemInfo info : sBgItemsIdMap) {
+                    for (ItemInfo info : sBgItemsIdMap) {//sBgItemsIdMap 这个就是workspace上的item列表
                         if (info instanceof ShortcutInfo && mUser.equals(info.user)) {
                             ShortcutInfo si = (ShortcutInfo) info;
                             boolean infoUpdated = false;
                             boolean shortcutUpdated = false;
 
                             // Update shortcuts which use iconResource.
-                            if ((si.iconResource != null)
-                                    && pkgFilter.matches(si.iconResource.packageName)) {
+                            if ((si.iconResource != null)){
+//                                    && pkgFilter.matches(si.iconResource.packageName)) {
                                 Bitmap icon = Utilities.createIconBitmap(
                                         si.iconResource.packageName,
                                         si.iconResource.resourceName, context);
-                                if (icon != null) {
-                                    si.setIcon(icon);
-                                    si.usingFallbackIcon = false;
+//                                if (icon != null) {
+//                                    si.setIcon(icon);
+//                                    si.usingFallbackIcon = false;
+//                                    infoUpdated = true;
+//                                }
+                                if (modified.get(0) != null && si.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
+                                    si.setIcon(modified.get(0).iconBitmap);
+                                    si.iconResource=null;
+                                    si.intent = modified.get(0).intent;
+                                    si.updateIcon(mIconCache);
+                                    si.title = Utilities.trim(modified.get(0).title);
+                                    si.contentDescription = modified.get(0).contentDescription;
                                     infoUpdated = true;
+                                }
+
+                                int oldDisabledFlags = si.isDisabled;
+                                si.isDisabled = flagOp.apply(si.isDisabled);
+                                if (si.isDisabled != oldDisabledFlags) {
+                                    shortcutUpdated = true;
                                 }
                             }
 
@@ -3258,6 +3288,7 @@ public class LauncherModel extends BroadcastReceiver
                     }
                 }
 
+                Log.i("zhao11update",TAG+" PackageUpdatedTask");
                 bindUpdatedShortcuts(updatedShortcuts, removedShortcuts, mUser);
                 if (!removedShortcuts.isEmpty()) {
                     deleteItemsFromDatabase(context, removedShortcuts);

@@ -237,7 +237,11 @@ public class ShortcutInfo extends ItemInfo {
     }
 
     public void updateIcon(IconCache iconCache, boolean useLowRes) {
-        if (itemType == Favorites.ITEM_TYPE_APPLICATION) {
+        if (itemType == Favorites.ITEM_TYPE_APPLICATION ) {
+            iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
+                    useLowRes);
+        }
+        if (itemType == Favorites.ITEM_TYPE_SHORTCUT ) {
             iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
                     useLowRes);
         }
