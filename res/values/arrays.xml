@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="app_icon_name">
+        <item>lq_linkic_supervpn</item>
+        <item>lq_linkic_lantern</item>
+        <item>lq_linkic_brainition</item>
+        <item>lq_linkic_wandoujia</item>
+        <item>lq_linkic_sensor</item>
+    </string-array>
+
+    <string-array name="app_package">
+        <item>com.jrzheng.supervpnfree</item>
+        <item>org.getlantern.lantern</item>
+        <item>com.orbital.brainiton</item>
+        <item>com.wandoujia.phoenix2</item>
+        <item>imoblife.androidsensorbox</item>
+    </string-array>
+</resources>
