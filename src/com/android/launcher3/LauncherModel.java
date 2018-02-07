@@ -822,6 +822,15 @@ public class LauncherModel extends BroadcastReceiver
     public static void updateItemInDatabase(Context context, final ItemInfo item) {
         final ContentValues values = new ContentValues();
         item.onAddToDatabase(context, values);
+        //add by zhaopenglin for linkicon 20180207 start
+        //这段代码是为了判断是否是linkicon被更新，是的话将存在laucnher.db数据库的iconResource置位空
+        //不更新这个字段为空的话linkicon的icon在重启后会被我们在launcher里配置的icon替换掉
+        if(item instanceof ShortcutInfo){
+            ShortcutInfo si = (ShortcutInfo)item;
+            if(si.iconResource != null && si.iconResource.resourceName.contains("ic_allapps"))
+            si.onAddIconResourceToDB(values);
+        }
+        //add by zhaopenglin for linkicon 20180207 end
         updateItemInDatabaseHelper(context, values, item, "updateItemInDatabase");
     }
 
@@ -3178,25 +3187,29 @@ public class LauncherModel extends BroadcastReceiver
                             boolean shortcutUpdated = false;
 
                             // Update shortcuts which use iconResource.
-                            if ((si.iconResource != null)){
-//                                    && pkgFilter.matches(si.iconResource.packageName)) {
+                            if ((si.iconResource != null)
+                                    && pkgFilter.matches(si.iconResource.packageName)) {
                                 Bitmap icon = Utilities.createIconBitmap(
                                         si.iconResource.packageName,
                                         si.iconResource.resourceName, context);
-//                                if (icon != null) {
-//                                    si.setIcon(icon);
-//                                    si.usingFallbackIcon = false;
-//                                    infoUpdated = true;
-//                                }
-                                if (modified.get(0) != null && si.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
-                                    si.setIcon(modified.get(0).iconBitmap);
-                                    si.iconResource=null;
-                                    si.intent = modified.get(0).intent;
-                                    si.updateIcon(mIconCache);
-                                    si.title = Utilities.trim(modified.get(0).title);
-                                    si.contentDescription = modified.get(0).contentDescription;
+                                if (icon != null) {
+                                    si.setIcon(icon);
+                                    si.usingFallbackIcon = false;
                                     infoUpdated = true;
                                 }
+                            }
+
+                            //add by zhaopenglin for linkicon 20180207 start
+                            //这段代码是为了判断是否是linkicon被更新，是的话将存在laucnher.db数据库的iconResource置位空
+                            //不更新这个字段为空的话linkicon的icon在重启后会被我们在launcher里配置的icon替换掉
+                            if ((si.iconResource != null)
+                                    && si.iconResource.resourceName.contains("ic_allapps")
+                                    && modified != null && modified.get(0) != null) {
+                                si.intent = modified.get(0).intent;
+                                si.updateIcon(mIconCache);
+                                si.title = Utilities.trim(modified.get(0).title);
+                                si.contentDescription = modified.get(0).contentDescription;
+                                infoUpdated = true;
 
                                 int oldDisabledFlags = si.isDisabled;
                                 si.isDisabled = flagOp.apply(si.isDisabled);
@@ -3204,6 +3217,7 @@ public class LauncherModel extends BroadcastReceiver
                                     shortcutUpdated = true;
                                 }
                             }
+                            //add by zhaopenglin for linkicon 20180207 end
 
                             ComponentName cn = si.getTargetComponent();
                             if (cn != null && pkgFilter.matches(cn.getPackageName())) {

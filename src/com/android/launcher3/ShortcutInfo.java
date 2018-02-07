@@ -274,6 +274,17 @@ public class ShortcutInfo extends ItemInfo {
         }
     }
 
+    //add by zhaopenglin for linkicon 20180207 start
+    /**
+     * 这个方法就是更新更新launcher数据库的时候把iconResource的两个字段置为空
+     * @param values
+     */
+    void onAddIconResourceToDB(ContentValues values ){
+        values.put(LauncherSettings.BaseLauncherColumns.ICON_PACKAGE,"");
+        values.put(LauncherSettings.BaseLauncherColumns.ICON_RESOURCE,"");
+    }
+    //add by zhaopenglin for linkicon 20180207 end
+
     public ComponentName getTargetComponent() {
         return promisedIntent != null ? promisedIntent.getComponent() : intent.getComponent();
     }
