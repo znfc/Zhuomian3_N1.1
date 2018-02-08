@@ -235,7 +235,12 @@ public class LauncherModel extends BroadcastReceiver
     public interface ItemInfoFilter {
         public boolean filterItem(ItemInfo parent, ItemInfo info, ComponentName cn);
     }
-
+    //add by zhaopenglin for linkicon 20180207 start
+    public static List<String> linkiconName;
+    public static List<String> linkiconPackage;
+    public static HashMap<String,String> hashMapLinkIcon =  new HashMap<String, String>();
+    public static boolean isUpdateLinkIcon = false;
+    //add by zhaopenglin for linkicon 20180207 end
     LauncherModel(LauncherAppState app, IconCache iconCache, AppFilter appFilter,
             DeepShortcutManager deepShortcutManager) {
         Context context = app.getContext();
@@ -247,6 +252,10 @@ public class LauncherModel extends BroadcastReceiver
 
         mLauncherApps = LauncherAppsCompat.getInstance(context);
         mUserManager = UserManagerCompat.getInstance(context);
+        //add by zhaopenglin for linkicon 20180207 start
+        linkiconName = Arrays.asList(context.getResources().getStringArray(R.array.app_icon_name));
+        linkiconPackage = Arrays.asList(context.getResources().getStringArray(R.array.app_package));
+        //add by zhaopenglin for linkicon 20180207 end
     }
 
     /** Runs the specified runnable immediately if called from the main thread, otherwise it is
@@ -822,6 +831,18 @@ public class LauncherModel extends BroadcastReceiver
     public static void updateItemInDatabase(Context context, final ItemInfo item) {
         final ContentValues values = new ContentValues();
         item.onAddToDatabase(context, values);
+        //add by zhaopenglin for linkicon 20180207 start
+        //这段代码是为了判断是否是linkicon被更新，是的话将存在laucnher.db数据库的iconResource置位空
+        //不更新这个字段为空的话linkicon的icon在重启后会被我们在launcher里配置的icon替换掉
+        if(item instanceof ShortcutInfo){
+            ShortcutInfo si = (ShortcutInfo)item;
+            if(si.iconResource != null && isUpdateLinkIcon) {
+                si.onAddIconResourceToDB(values);
+                si.iconResource = null;
+                isUpdateLinkIcon = false;
+            }
+        }
+        //add by zhaopenglin for linkicon 20180207 end
         updateItemInDatabaseHelper(context, values, item, "updateItemInDatabase");
     }
 
@@ -3174,6 +3195,56 @@ public class LauncherModel extends BroadcastReceiver
                                     infoUpdated = true;
                                 }
                             }
+
+                            //add by zhaopenglin for linkicon 20180207 start
+                            //这段代码是为了判断是否是linkicon被更新，是的话将存在laucnher.db数据库的iconResource置位空
+                            //不更新这个字段为空的话linkicon的icon在重启后会被我们在launcher里配置的icon替换掉
+
+                            if(added != null){//判断是否有应用安装
+                                for(AppInfo appInfo : added){
+                                    if(appInfo.componentName != null
+                                            && linkiconPackage.contains(appInfo.componentName.getPackageName())){//判断安装的应用是否是linkicon应用
+
+                                        if(si.iconResource != null && si.iconResource.resourceName.contains("lq_linkic")){//粗略判断是否有要更新的shortcut
+                                            for(int i = 0;i < linkiconPackage.size();i++) {
+                                                if(linkiconPackage.get(i).equals(appInfo.componentName.getPackageName())){//找到对应更新的应用index
+                                                    if(si.iconResource.resourceName.contains(linkiconName.get(i))) {//找到对应更新的shortcut
+                                                        si.intent = appInfo.intent;
+                                                        si.updateIcon(mIconCache);
+                                                        si.contentDescription = appInfo.contentDescription;
+                                                        infoUpdated = true;
+
+                                                        int oldDisabledFlags = si.isDisabled;
+                                                        si.isDisabled = flagOp.apply(si.isDisabled);
+                                                        if (si.isDisabled != oldDisabledFlags) {
+                                                            shortcutUpdated = true;
+                                                        }
+                                                        isUpdateLinkIcon = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+//                            if (added != null&& (si.iconResource != null)
+//                                    && si.iconResource.resourceName.contains("lq_linkic")
+//                                    && added.get(0) != null) {
+//
+//                                si.intent = added.get(0).intent;
+//                                si.updateIcon(mIconCache);
+//                                si.contentDescription = added.get(0).contentDescription;
+//                                infoUpdated = true;
+//
+//                                int oldDisabledFlags = si.isDisabled;
+//                                si.isDisabled = flagOp.apply(si.isDisabled);
+//                                if (si.isDisabled != oldDisabledFlags) {
+//                                    shortcutUpdated = true;
+//                                }
+//                            }
+                            //add by zhaopenglin for linkicon 20180207 end
 
                             ComponentName cn = si.getTargetComponent();
                             if (cn != null && pkgFilter.matches(cn.getPackageName())) {

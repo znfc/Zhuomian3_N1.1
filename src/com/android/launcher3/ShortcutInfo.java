@@ -241,6 +241,14 @@ public class ShortcutInfo extends ItemInfo {
             iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
                     useLowRes);
         }
+        //add by zhaopenglin for linkicon 20180207 start
+        //linkicon是shortcut类型的，所以要添加这段代码
+        if (itemType == Favorites.ITEM_TYPE_SHORTCUT ) {
+            iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
+                    useLowRes);
+        }
+        //add by zhaopenglin for linkicon 20180207 end
+
     }
 
     public void updateIcon(IconCache iconCache) {
@@ -269,6 +277,17 @@ public class ShortcutInfo extends ItemInfo {
                     iconResource.resourceName);
         }
     }
+
+    //add by zhaopenglin for linkicon 20180207 start
+    /**
+     * 这个方法就是更新更新launcher数据库的时候把iconResource的两个字段置为空
+     * @param values
+     */
+    void onAddIconResourceToDB(ContentValues values ){
+        values.put(LauncherSettings.BaseLauncherColumns.ICON_PACKAGE,"");
+        values.put(LauncherSettings.BaseLauncherColumns.ICON_RESOURCE,"");
+    }
+    //add by zhaopenglin for linkicon 20180207 end
 
     public ComponentName getTargetComponent() {
         return promisedIntent != null ? promisedIntent.getComponent() : intent.getComponent();
