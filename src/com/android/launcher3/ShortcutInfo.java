@@ -241,10 +241,14 @@ public class ShortcutInfo extends ItemInfo {
             iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
                     useLowRes);
         }
+        //add by zhaopenglin for linkicon 20180207 start
+        //linkicon是shortcut类型的，所以要添加这段代码
         if (itemType == Favorites.ITEM_TYPE_SHORTCUT ) {
             iconCache.getTitleAndIcon(this, promisedIntent != null ? promisedIntent : intent, user,
                     useLowRes);
         }
+        //add by zhaopenglin for linkicon 20180207 end
+
     }
 
     public void updateIcon(IconCache iconCache) {
