@@ -36,6 +36,61 @@
         <favorite launcher:uri="#Intent;type=images/*;end" />
     </resolve>
 
+    <favorite
+        launcher:packageName="com.jrzheng.supervpnfree333"
+        launcher:className="com.jrzheng.supervpn.view.MainActivity333"
+        launcher:screen="0"
+        launcher:x="1"
+        launcher:y="-1" />
+
+    <!--<shortcut-->
+        <!--launcher:packageName="com.jrzheng.supervpnfree"-->
+        <!--launcher:className="com.jrzheng.supervpn.view.MainActivity"-->
+        <!--launcher:screen="0"-->
+        <!--launcher:x="1"-->
+        <!--launcher:y="-1"-->
+        <!--launcher:icon="@drawable/ic_allapps"-->
+        <!--launcher:title="@string/app_name"-->
+        <!--launcher:uri="https://www.baidu.com/" />-->
+
+    <folder title="@string/folder_name" screen="0" x="2" y="-1">
+
+        <favorite
+            launcher:packageName="com.jrzheng.supervpnfree"
+            launcher:className="com.jrzheng.supervpn.view.MainActivity"
+            launcher:screen="0"/>
+
+        <shortcut
+            launcher:icon="@drawable/lq_linkic_supervpn"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+
+        <shortcut
+            launcher:icon="@drawable/lq_linkic_lantern"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+
+        <shortcut
+            launcher:icon="@drawable/lq_linkic_brainition"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+
+        <shortcut
+            launcher:icon="@drawable/lq_linkic_wandoujia"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+
+        <shortcut
+            launcher:icon="@drawable/lq_linkic_sensor"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+
+        <shortcut
+            launcher:icon="@drawable/ic_info_launcher"
+            launcher:title="@string/work_folder_name"
+            launcher:uri="https://www.baidu.com/" />
+    </folder>
+
     <resolve
         launcher:screen="0"
         launcher:x="3"
