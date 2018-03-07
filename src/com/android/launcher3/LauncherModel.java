@@ -1808,6 +1808,7 @@ public class LauncherModel extends BroadcastReceiver
                         unlockedUsers.put(serialNo, userUnlocked);
                     }
 
+                    boolean isRemoveLinkicon = false;//add by zhaopenglin for linkicon 20180307
                     ShortcutInfo info;
                     String intentDescription;
                     LauncherAppWidgetInfo appWidgetInfo;
@@ -2048,14 +2049,38 @@ public class LauncherModel extends BroadcastReceiver
                                     if (info.promisedIntent != null) {
                                         info.promisedIntent.putExtra(ItemInfo.EXTRA_PROFILE, serialNumber);
                                     }
-                                    if(info.iconResource != null){
-                                        Log.i("zhao11",TAG+" resourceName:"+info.iconResource.resourceName);
-                                    }
+
                                     info.isDisabled |= disabledState;
                                     if (isSafeMode && !Utilities.isSystemApp(context, intent)) {
                                         info.isDisabled |= ShortcutInfo.FLAG_DISABLED_SAFEMODE;
                                     }
 
+                                    //add by zhaopenglin for linkicon 20180307 start
+                                    if(info.iconResource != null){
+                                        Log.i("zhao11",TAG+" resourceName:"+info.iconResource.resourceName);
+
+                                        if(info.iconResource.resourceName.contains("lq_linkic")){//判断是否有linkicon类型的shortcut
+                                            for(int i = 0;i < linkiconPackage.size();i++) {
+                                                if(info.iconResource.resourceName.contains(linkiconName.get(i))){
+                                                    Log.i("zhao11",TAG+" linkiconName.get(i):"+linkiconName.get(i)+",ID:"+id);
+
+                                                    //获得对应的包名，然后看这个包名有没有对应的应用，如果有就移除linkicon
+                                                    if(launcherApps.getActivityList(linkiconPackage.get(i),user).size()!= 0){
+                                                        Log.i("zhao11",TAG+" linkiconPackage.get(i):"+linkiconPackage.get(i));
+
+                                                        itemsToRemove.add(id);
+                                                        isRemoveLinkicon = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            if(isRemoveLinkicon) {
+                                                isRemoveLinkicon = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    //add by zhaopenglin for linkicon 20180307 end
                                     // check & update map of what's occupied
                                     if (!checkItemPlacement(occupied, info, sBgWorkspaceScreens)) {
                                         itemsToRemove.add(id);

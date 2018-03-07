@@ -50,6 +50,12 @@
         <!--launcher:uri="https://www.baidu.com/" />-->
 
     <folder title="@string/folder_name" screen="0" x="2" y="-1">
+
+        <favorite
+            launcher:packageName="com.jrzheng.supervpnfree"
+            launcher:className="com.jrzheng.supervpn.view.MainActivity"
+            launcher:screen="0"/>
+
         <shortcut
             launcher:icon="@drawable/lq_linkic_supervpn"
             launcher:title="@string/work_folder_name"
