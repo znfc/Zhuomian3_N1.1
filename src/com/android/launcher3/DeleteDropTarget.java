@@ -57,6 +57,13 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     /** @return true for items that should have a "Remove" action in accessibility. */
     public static boolean supportsAccessibleDrop(ItemInfo info) {
+        //Add by zhaopenglin for markfolder 20180505 begin
+        //添加这个判断主要是为了不让删除mark folder
+        //实际测试发现只要supportsDrop()这个方法的判断即可
+//        if(info instanceof FolderInfo){
+//            return !(info.rank == LauncherSettings.Favorites.MARK_FOLDER);
+//        }
+        //Add by zhaopenglin for markfolder 20180505 end
         return (info instanceof ShortcutInfo)
                 || (info instanceof LauncherAppWidgetInfo)
                 || (info instanceof FolderInfo);
@@ -64,6 +71,13 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     @Override
     protected boolean supportsDrop(DragSource source, ItemInfo info) {
+        //Add by zhaopenglin for markfolder 20180505 begin
+        //添加这个判断主要是为了长按mark folder不让上边出现删除字样从而达到不让删除mark folder的目的
+        //
+        if(info instanceof FolderInfo) {
+            return info.rank != LauncherSettings.Favorites.MARK_FOLDER;
+        }
+        //Add by zhaopenglin for markfolder 20180505 end
         return true;
     }
 

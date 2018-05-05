@@ -435,6 +435,9 @@ public class DragController implements DragDriver.EventListener, TouchController
         if (dropTargetOverride != null) {
             dropTarget = dropTargetOverride;
         } else {
+            //添加这个判断是为了禁止拖拽mark folder甩着删除20180505
+            //mDragObject.dragInfo.itemType = 2 是folder类型的
+            if(!(mDragObject.dragInfo.itemType == 2 && mDragObject.dragInfo.rank == 64 ))
             vec = isFlingingToDelete(mDragObject.dragSource);
             if (vec != null) {
                 dropTarget = mFlingToDeleteDropTarget;
