@@ -37,6 +37,7 @@ import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.PagedView;
 import com.android.launcher3.R;
 import com.android.launcher3.ShortcutAndWidgetContainer;
@@ -414,6 +415,7 @@ public class FolderPagedView extends PagedView {
     }
 
     public boolean isFull() {
+        if(mFolder.mInfo.rank == LauncherSettings.Favorites.MARK_FOLDER) return true;//添加这个就是控制往标记文件夹里拖其他应用
         return !ALLOW_FOLDER_SCROLL && getItemCount() >= mMaxItemsPerPage;
     }
 

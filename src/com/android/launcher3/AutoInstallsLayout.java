@@ -271,6 +271,16 @@ public class AutoInstallsLayout {
         mValues.put(Favorites.CELLY,
                 convertToDistanceFromEnd(getAttributeValue(parser, ATTR_Y), mRowCount));
 
+        //Add by zhaopenglin for rjio 20180504 begin
+        // 添加文件夹rank不为0,（默认是0）用来区分是不是标记的文件夹
+        //要在default_workspace里配置一下，目前测试发现第一次加载workspace会把这个值写入数据库不过好像没有同步到代码里
+        mValues.put(Favorites.RANK,
+                convertToDistanceFromEnd(getAttributeValue(parser, ATTR_RANK), 0) != null ? Favorites.MARK_FOLDER+"" :"0");
+
+if(getAttributeValue(parser, ATTR_RANK) != null)        new RuntimeException("zhao33").printStackTrace();
+        Log.i("zhao33","3333333:"+convertToDistanceFromEnd(getAttributeValue(parser, ATTR_RANK), 0));
+        //Add by zhaopenglin for rjio 20180504 end
+
         TagParser tagParser = tagParserMap.get(parser.getName());
         if (tagParser == null) {
             if (LOGD) Log.d(TAG, "Ignoring unknown element tag: " + parser.getName());

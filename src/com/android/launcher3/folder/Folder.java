@@ -752,7 +752,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return ((itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) &&
-                    !isFull());
+                    (!isFull()||
+                        mInfo.rank == LauncherSettings.Favorites.MARK_FOLDER ));//添加这个是为了解决在标记文件夹里长按
+                                                  //Icon的时候松手会有个往folder位置移动的动画
     }
 
     public void onDragEnter(DragObject d) {

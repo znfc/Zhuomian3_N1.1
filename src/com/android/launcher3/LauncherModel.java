@@ -750,7 +750,7 @@ public class LauncherModel extends BroadcastReceiver
         values.put(LauncherSettings.Favorites.CONTAINER, item.container);
         values.put(LauncherSettings.Favorites.CELLX, item.cellX);
         values.put(LauncherSettings.Favorites.CELLY, item.cellY);
-        values.put(LauncherSettings.Favorites.RANK, item.rank);
+        values.put(LauncherSettings.Favorites.RANK, item.rank);//移动
         values.put(LauncherSettings.Favorites.SCREEN, item.screenId);
 
         updateItemInDatabaseHelper(context, values, item, "moveItemInDatabase");
@@ -784,7 +784,7 @@ public class LauncherModel extends BroadcastReceiver
             values.put(LauncherSettings.Favorites.CONTAINER, item.container);
             values.put(LauncherSettings.Favorites.CELLX, item.cellX);
             values.put(LauncherSettings.Favorites.CELLY, item.cellY);
-            values.put(LauncherSettings.Favorites.RANK, item.rank);
+            values.put(LauncherSettings.Favorites.RANK, item.rank);//文件夹item
             values.put(LauncherSettings.Favorites.SCREEN, item.screenId);
 
             contentValues.add(values);
@@ -1725,7 +1725,7 @@ public class LauncherModel extends BroadcastReceiver
 
             Log.d(TAG, "loadWorkspace: loading default favorites");
             LauncherSettings.Settings.call(contentResolver,
-                    LauncherSettings.Settings.METHOD_LOAD_DEFAULT_FAVORITES);
+                    LauncherSettings.Settings.METHOD_LOAD_DEFAULT_FAVORITES);//解析default_workspace并建立数据库
 
             synchronized (sBgLock) {
                 clearSBgDataStructures();
@@ -2131,6 +2131,8 @@ public class LauncherModel extends BroadcastReceiver
                                 folderInfo.spanX = 1;
                                 folderInfo.spanY = 1;
                                 folderInfo.options = c.getInt(optionsIndex);
+
+                                folderInfo.rank = c.getInt(rankIndex);//Add by zhaopenglin 将数据库的rank和文件夹类型的item进行同步20180505
 
                                 // check & update map of what's occupied
                                 if (!checkItemPlacement(occupied, folderInfo, sBgWorkspaceScreens)) {

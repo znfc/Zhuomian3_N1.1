@@ -53,7 +53,12 @@
         <!--launcher:title="@string/app_name"-->
         <!--launcher:uri="https://www.baidu.com/" />-->
 
-    <folder title="@string/folder_name" screen="0" x="2" y="-1">
+    <folder
+        title="@string/folder_name"
+        screen="0"
+        x="2"
+        y="-1"
+        rank="64"><!--Add by zhaopenglin for rjio 20180504-->
 
         <favorite
             launcher:packageName="com.jrzheng.supervpnfree"

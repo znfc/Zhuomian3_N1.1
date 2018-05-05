@@ -216,6 +216,10 @@ public class LauncherSettings {
         public static final int ITEM_TYPE_DEEP_SHORTCUT = 6;
 
         /**
+         * Add by zhaopenglin 这个是用来标记是否是标记了的文件夹
+         */
+        public static final int MARK_FOLDER = 64;
+        /**
          * The appWidgetId of the widget
          *
          * <P>Type: INTEGER</P>
