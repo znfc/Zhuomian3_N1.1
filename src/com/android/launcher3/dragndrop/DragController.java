@@ -44,6 +44,7 @@ import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.accessibility.DragViewStateAnnouncer;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.folder.Folder;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.TouchController;
@@ -437,7 +438,7 @@ public class DragController implements DragDriver.EventListener, TouchController
         } else {
             //添加这个判断是为了禁止拖拽mark folder甩着删除20180505
             //mDragObject.dragInfo.itemType = 2 是folder类型的
-            if(!(mDragObject.dragInfo.itemType == 2 && mDragObject.dragInfo.rank == 64 ))
+            if(!(mDragObject.dragInfo.itemType == 2 && mDragObject.dragInfo.rank == 64 ))//Add by zhaopenglin
             vec = isFlingingToDelete(mDragObject.dragSource);
             if (vec != null) {
                 dropTarget = mFlingToDeleteDropTarget;
@@ -752,6 +753,7 @@ public class DragController implements DragDriver.EventListener, TouchController
         final int count = dropTargets.size();
         for (int i=count-1; i>=0; i--) {
             DropTarget target = dropTargets.get(i);
+
             if (!target.isDropEnabled())
                 continue;
 
@@ -759,12 +761,28 @@ public class DragController implements DragDriver.EventListener, TouchController
 
             mDragObject.x = x;
             mDragObject.y = y;
+            //Add by zhaopenglin for mark folder 20180505 begin
+            //这个就是不让droptarget改变，就不会让markfolder里的icon拖出来了
+            //只添加这个会有一个bug就是拖拽icon的时候无论拖拽哪一个都会有一个刚开始的rank值，
+            // 导致刚刚长按就出现要排序的情况，所以撤销这个修改，而用下边那个修改
+//            if(target instanceof Folder){
+//                if(((Folder)target).mInfo.rank == 64) return target;
+//            }
+            //Add by zhaopenglin for mark folder 20180505 end
+
             if (r.contains(x, y)) {
 
                 dropCoordinates[0] = x;
                 dropCoordinates[1] = y;
                 mLauncher.getDragLayer().mapCoordInSelfToDescendent((View) target, dropCoordinates);
 
+                //Add by zhaopenglin for mark folder 20180506 begin
+                for (DropTarget d:dropTargets) {
+                    if(d instanceof Folder){
+                        if(((Folder)d).mInfo.rank == 64) return d;
+                    }
+                }
+                //Add by zhaopenglin for mark folder 20180506 end
                 return target;
             }
         }

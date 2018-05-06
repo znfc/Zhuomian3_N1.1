@@ -59,7 +59,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     public static boolean supportsAccessibleDrop(ItemInfo info) {
         //Add by zhaopenglin for markfolder 20180505 begin
         //添加这个判断主要是为了不让删除mark folder
-        //实际测试发现只要supportsDrop()这个方法的判断即可
+        //实际测试发现只要在下边的方法supportsDrop()这个方法的判断即可
 //        if(info instanceof FolderInfo){
 //            return !(info.rank == LauncherSettings.Favorites.MARK_FOLDER);
 //        }
@@ -73,9 +73,12 @@ public class DeleteDropTarget extends ButtonDropTarget {
     protected boolean supportsDrop(DragSource source, ItemInfo info) {
         //Add by zhaopenglin for markfolder 20180505 begin
         //添加这个判断主要是为了长按mark folder不让上边出现删除字样从而达到不让删除mark folder的目的
-        //
         if(info instanceof FolderInfo) {
             return info.rank != LauncherSettings.Favorites.MARK_FOLDER;
+        }
+        //这个方法是长按mark folder里的item不让显示出删除的字样20180506
+        if(source instanceof Folder){
+            return((Folder)source).mInfo.rank != LauncherSettings.Favorites.MARK_FOLDER;
         }
         //Add by zhaopenglin for markfolder 20180505 end
         return true;

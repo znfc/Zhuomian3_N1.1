@@ -991,6 +991,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     @Override
     public boolean supportsFlingToDelete() {
+        if(mInfo.rank == 64 ) return false;//Add by zhaopenglin for mark folder,防止文件夹里的item被甩着删除20180506
         return true;
     }
 
