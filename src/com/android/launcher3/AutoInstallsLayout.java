@@ -277,7 +277,6 @@ public class AutoInstallsLayout {
         mValues.put(Favorites.RANK,
                 convertToDistanceFromEnd(getAttributeValue(parser, ATTR_RANK), 0) != null ? Favorites.MARK_FOLDER+"" :"0");
 
-if(getAttributeValue(parser, ATTR_RANK) != null)        new RuntimeException("zhao33").printStackTrace();
         Log.i("zhao33","3333333:"+convertToDistanceFromEnd(getAttributeValue(parser, ATTR_RANK), 0));
         //Add by zhaopenglin for rjio 20180504 end
 

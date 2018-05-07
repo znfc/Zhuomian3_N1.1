@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.util.Log;
 
 import com.android.launcher3.compat.LauncherActivityInfoCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
@@ -46,6 +47,9 @@ class AllAppsList {
     public ArrayList<AppInfo> removed = new ArrayList<AppInfo>();
     /** The list of apps that have been modified since the last notify() call. */
     public ArrayList<AppInfo> modified = new ArrayList<AppInfo>();
+
+    /** 用来记录RJIO卸载应用的列表 */
+    public ArrayList<AppInfo> removemodified = new ArrayList<AppInfo>();//Add by zhaopenglin for markfolder 20180507
 
     private IconCache mIconCache;
 
@@ -82,6 +86,7 @@ class AllAppsList {
         added.clear();
         removed.clear();
         modified.clear();
+        removemodified.clear();//Add by zhaopenglin for markfolder 20180507
     }
 
     public int size() {
@@ -108,17 +113,39 @@ class AllAppsList {
     /**
      * Remove the apps for the given apk identified by packageName.
      */
-    public void removePackage(String packageName, UserHandleCompat user) {
+    public void removePackage(String packageName, UserHandleCompat user) {//卸载走这个方法
         final List<AppInfo> data = this.data;
         for (int i = data.size() - 1; i >= 0; i--) {
             AppInfo info = data.get(i);
             final ComponentName component = info.intent.getComponent();
             if (info.user.equals(user) && packageName.equals(component.getPackageName())) {
                 removed.add(info);
+                Log.i("zhao11update",this.getClass().getSimpleName()+ " removePackage:"+info);
+
                 data.remove(i);
             }
         }
     }
+
+    //Add by zhaopenglin for markfolder 20180507 begin
+    /**
+     * Remove the apps for the given apk identified by packageName.
+     */
+    public void removeUpdatePackage(String packageName, UserHandleCompat user) {
+        final List<AppInfo> data = this.data;
+        for (int i = data.size() - 1; i >= 0; i--) {
+            AppInfo info = data.get(i);
+            final ComponentName component = info.intent.getComponent();
+            if (info.user.equals(user) && packageName.equals(component.getPackageName())) {
+                removemodified.add(info);
+                Log.i("zhao11update",this.getClass().getSimpleName()+ "removemodified removePackage:"+info);
+
+                data.remove(i);
+            }
+        }
+    }
+    //Add by zhaopenglin for markfolder 20180507 end
+
 
     /**
      * Updates the apps for the given packageName and user based on {@param op}.
@@ -131,6 +158,8 @@ class AllAppsList {
             if (info.user.equals(user) && pkgFilter.matches(component.getPackageName())) {
                 info.isDisabled = op.apply(info.isDisabled);
                 modified.add(info);
+                Log.i("zhao11update",this.getClass().getSimpleName()+ ", modified updatePackageFlags:"+info);
+
             }
         }
     }
@@ -162,6 +191,8 @@ class AllAppsList {
                         && packageName.equals(component.getPackageName())) {
                     if (!findActivity(matches, component)) {
                         removed.add(applicationInfo);
+                        Log.i("zhao11update",this.getClass().getSimpleName()+ ",removed updatePackage:"+applicationInfo);
+
                         data.remove(i);
                     }
                 }
@@ -178,6 +209,8 @@ class AllAppsList {
                 } else {
                     mIconCache.getTitleAndIcon(applicationInfo, info, true /* useLowResIcon */);
                     modified.add(applicationInfo);
+                    Log.i("zhao11update",this.getClass().getSimpleName()+ ", modified updatePackage:"+applicationInfo);
+
                 }
             }
         } else {
@@ -188,6 +221,8 @@ class AllAppsList {
                 if (user.equals(applicationInfo.user)
                         && packageName.equals(component.getPackageName())) {
                     removed.add(applicationInfo);
+                    Log.i("zhao11update",this.getClass().getSimpleName()+ " updatePackage222222222:"+applicationInfo);
+
                     mIconCache.remove(component, user);
                     data.remove(i);
                 }
