@@ -47,6 +47,8 @@ class AllAppsList {
     /** The list of apps that have been modified since the last notify() call. */
     public ArrayList<AppInfo> modified = new ArrayList<AppInfo>();
 
+    public ArrayList<AppInfo> removemodified = new ArrayList<AppInfo>();//Add by zhaopenglin for markfolder 20180508
+
     private IconCache mIconCache;
 
     private AppFilter mAppFilter;
@@ -82,6 +84,7 @@ class AllAppsList {
         added.clear();
         removed.clear();
         modified.clear();
+        removemodified.clear();//Add by zhaopenglin for markfolder 20180508
     }
 
     public int size() {
@@ -119,6 +122,24 @@ class AllAppsList {
             }
         }
     }
+
+    //Add by zhaopenglin for markfolder 20180508 begin
+    /**
+     * Remove the apps for the given apk identified by packageName.
+     */
+    public void removeUpdatePackage(String packageName, UserHandleCompat user) {
+        final List<AppInfo> data = this.data;
+        for (int i = data.size() - 1; i >= 0; i--) {
+            AppInfo info = data.get(i);
+            final ComponentName component = info.intent.getComponent();
+            if (info.user.equals(user) && packageName.equals(component.getPackageName())) {
+                removemodified.add(info);
+                data.remove(i);
+            }
+        }
+    }
+    //Add by zhaopenglin for markfolder 20180508 end
+
 
     /**
      * Updates the apps for the given packageName and user based on {@param op}.

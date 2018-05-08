@@ -44,6 +44,7 @@ import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.accessibility.DragViewStateAnnouncer;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.folder.Folder;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.TouchController;
@@ -435,6 +436,7 @@ public class DragController implements DragDriver.EventListener, TouchController
         if (dropTargetOverride != null) {
             dropTarget = dropTargetOverride;
         } else {
+            if(!(mDragObject.dragInfo.itemType == 2 && mDragObject.dragInfo.rank == 64 ))//Add by zhaopenglin for markfolder 20180508
             vec = isFlingingToDelete(mDragObject.dragSource);
             if (vec != null) {
                 dropTarget = mFlingToDeleteDropTarget;
@@ -762,6 +764,13 @@ public class DragController implements DragDriver.EventListener, TouchController
                 dropCoordinates[1] = y;
                 mLauncher.getDragLayer().mapCoordInSelfToDescendent((View) target, dropCoordinates);
 
+                //Add by zhaopenglin for mark folder 20180508 begin
+                for (DropTarget d:dropTargets) {
+                    if(d instanceof Folder){
+                        if(((Folder)d).mInfo.rank == 64) return d;
+                    }
+                }
+                //Add by zhaopenglin for mark folder 20180508 end
                 return target;
             }
         }

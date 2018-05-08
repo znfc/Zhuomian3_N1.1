@@ -238,6 +238,13 @@ public class LauncherModel extends BroadcastReceiver
     //add by zhaopenglin for linkicon 20180207 start
     public static List<String> linkiconName;
     public static List<String> linkiconPackage;
+    public static int [] linkiconresource = {
+            R.drawable.lq_linkic_supervpn,
+            R.drawable.lq_linkic_lantern,
+            R.drawable.lq_linkic_brainition,
+            R.drawable.lq_linkic_wandoujia,
+            R.drawable.lq_linkic_sensor};//Add by zhaopenglin for markfolder 20180508
+
     public static HashMap<String,String> hashMapLinkIcon =  new HashMap<String, String>();
     public static boolean isUpdateLinkIcon = false;
     //add by zhaopenglin for linkicon 20180207 end
@@ -846,6 +853,17 @@ public class LauncherModel extends BroadcastReceiver
         updateItemInDatabaseHelper(context, values, item, "updateItemInDatabase");
     }
 
+    //Add by zhaopenglin for markfolder 20180508 begin
+    /**
+     * Update an item to the database in a specified container.
+     */
+    public static void removeUpdateItemInDatabase(Context context, final ShortcutInfo item) {
+        final ContentValues values = new ContentValues();
+        item.onAddToDatabase(context, values);
+        updateItemInDatabaseHelper(context, values, item, "updateItemInDatabase");
+    }
+    //Add by zhaopenglin for markfolder 20180508 end
+
     private void assertWorkspaceLoaded() {
         if (ProviderConfig.IS_DOGFOOD_BUILD) {
             synchronized (mLock) {
@@ -1177,6 +1195,15 @@ public class LauncherModel extends BroadcastReceiver
 
     @Override
     public void onPackageRemoved(String packageName, UserHandleCompat user) {
+        //Add by zhaopenglin for mark folder 20180508 begin
+        if(linkiconPackage.contains(packageName)){
+            int op = PackageUpdatedTask.OP_REMOVE_UPDATE;
+            enqueueItemUpdatedTask(new PackageUpdatedTask(op, new String[] { packageName },
+                    user));
+            return;
+        }
+        //Add by zhaopenglin for mark folder 20180508 end
+
         int op = PackageUpdatedTask.OP_REMOVE;
         enqueueItemUpdatedTask(new PackageUpdatedTask(op, new String[] { packageName },
                 user));
@@ -2117,6 +2144,8 @@ public class LauncherModel extends BroadcastReceiver
                                 folderInfo.spanX = 1;
                                 folderInfo.spanY = 1;
                                 folderInfo.options = c.getInt(optionsIndex);
+
+                                folderInfo.rank = c.getInt(rankIndex);//Add by zhaopenglin for markfolder 20180508
 
                                 // check & update map of what's occupied
                                 if (!checkItemPlacement(occupied, folderInfo, sBgWorkspaceScreens)) {
@@ -3071,6 +3100,8 @@ public class LauncherModel extends BroadcastReceiver
         public static final int OP_UNSUSPEND = 6; // package unsuspended
         public static final int OP_USER_AVAILABILITY_CHANGE = 7; // user available/unavailable
 
+        public static final int OP_REMOVE_UPDATE = 8; //Add by zhaopenglin for markfolder 20180508
+
         public PackageUpdatedTask(int op, String[] packages, UserHandleCompat user) {
             mOp = op;
             mPackages = packages;
@@ -3147,10 +3178,28 @@ public class LauncherModel extends BroadcastReceiver
                     pkgFilter = StringFilter.matchesAll();
                     mBgAllAppsList.updatePackageFlags(pkgFilter, mUser, flagOp);
                     break;
+                //Add by zhaopenglin for mark folder 20180508 begin
+                case OP_REMOVE_UPDATE:
+                    ManagedProfileHeuristic heuristic = ManagedProfileHeuristic.get(context, mUser);
+                    if (heuristic != null) {
+                        heuristic.processPackageRemoved(mPackages);
+                    }
+                    for (int i=0; i<N; i++) {
+                        if (DEBUG_LOADERS) Log.d(TAG, "mAllAppsList.removeUpdatePackage " + packages[i]);
+                        mIconCache.removeIconsForPkg(packages[i], mUser);
+                        mBgAllAppsList.removeUpdatePackage(packages[i], mUser);
+                        mApp.getWidgetCache().removePackage(packages[i], mUser);
+                    }
+                    // Since package was just updated, the target must be available now.
+                    flagOp = FlagOp.removeFlag(ShortcutInfo.FLAG_DISABLED_NOT_AVAILABLE);
+                    break;
+                    //Add by zhaopenglin for mark folder 20180508 end
+
             }
 
             ArrayList<AppInfo> added = null;
             ArrayList<AppInfo> modified = null;
+            final ArrayList<AppInfo> removemodified =  new ArrayList<AppInfo>();//Add by zhaopenglin for markfolder 20180508
             final ArrayList<AppInfo> removedApps = new ArrayList<AppInfo>();
 
             if (mBgAllAppsList.added.size() > 0) {
@@ -3165,6 +3214,13 @@ public class LauncherModel extends BroadcastReceiver
                 removedApps.addAll(mBgAllAppsList.removed);
                 mBgAllAppsList.removed.clear();
             }
+            //Add by zhaopenglin for mark folder 20180508 begin
+            if (mBgAllAppsList.removemodified.size() > 0) {
+                removemodified.addAll(mBgAllAppsList.removemodified);
+                mBgAllAppsList.removemodified.clear();
+            }
+            //Add by zhaopenglin for mark folder 20180508 end
+
 
             final HashMap<ComponentName, AppInfo> addedOrUpdatedApps = new HashMap<>();
 
@@ -3193,7 +3249,7 @@ public class LauncherModel extends BroadcastReceiver
             }
 
             // Update shortcut infos
-            if (mOp == OP_ADD || flagOp != FlagOp.NO_OP) {
+            if (mOp == OP_ADD || mOp == OP_REMOVE_UPDATE ||  flagOp != FlagOp.NO_OP) {//Modify by zhaopenglin for markfolder 20180508
                 final ArrayList<ShortcutInfo> updatedShortcuts = new ArrayList<ShortcutInfo>();
                 final ArrayList<ShortcutInfo> removedShortcuts = new ArrayList<ShortcutInfo>();
                 final ArrayList<LauncherAppWidgetInfo> widgets = new ArrayList<LauncherAppWidgetInfo>();
@@ -3204,6 +3260,7 @@ public class LauncherModel extends BroadcastReceiver
                             ShortcutInfo si = (ShortcutInfo) info;
                             boolean infoUpdated = false;
                             boolean shortcutUpdated = false;
+                            boolean removeShortcutUpdate = false;//Add by zhaopenglin for markfolder 20180508
 
                             // Update shortcuts which use iconResource.
                             if ((si.iconResource != null)
@@ -3269,6 +3326,32 @@ public class LauncherModel extends BroadcastReceiver
                             //add by zhaopenglin for linkicon 20180207 end
 
                             ComponentName cn = si.getTargetComponent();
+
+                            //Add by zhaopenglin for mark folder 20180508 begin
+                            if(mOp == OP_REMOVE_UPDATE && cn != null && pkgFilter.matches(cn.getPackageName())){
+                                final String packagestr = cn.getPackageName();
+                                if(linkiconPackage.contains(packagestr)){
+                                    for(int i = 0;i < linkiconPackage.size();i++) {
+                                        if(linkiconPackage.get(i).equals(packagestr)){
+                                            si.iconResource = ShortcutIconResource.fromContext(context,linkiconresource[i]);
+                                            if ((si.iconResource != null)) {
+                                                Bitmap icon = Utilities.createIconBitmap(
+                                                        si.iconResource.packageName,
+                                                        si.iconResource.resourceName, context);
+                                                if (icon != null) {
+                                                    si.setIcon(icon);
+                                                    shortcutUpdated = true;
+                                                }
+                                            }
+                                            si.intent = new Intent(Intent.ACTION_VIEW, null).setData(Uri.parse("https://www.baidu.com"));
+                                            removeShortcutUpdate = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            //Add by zhaopenglin for mark folder 20180508 end
+
                             if (cn != null && pkgFilter.matches(cn.getPackageName())) {
                                 AppInfo appInfo = addedOrUpdatedApps.get(cn);
 
@@ -3330,6 +3413,12 @@ public class LauncherModel extends BroadcastReceiver
                             if (infoUpdated) {
                                 updateItemInDatabase(context, si);
                             }
+                            //Add by zhaopenglin for markfolder 20180508 begin
+                            if(removeShortcutUpdate){
+                                removeUpdateItemInDatabase(context,si);
+                            }
+                            //Add by zhaopenglin for markfolder 20180508 end
+
                         } else if (info instanceof LauncherAppWidgetInfo && mOp == OP_ADD) {
                             LauncherAppWidgetInfo widgetInfo = (LauncherAppWidgetInfo) info;
                             if (mUser.equals(widgetInfo.user)
@@ -3428,10 +3517,26 @@ public class LauncherModel extends BroadcastReceiver
                 });
             }
 
+            //Add by zhaopenglin for markfolder 20180508 begin
+            if (!removemodified.isEmpty()) {
+                // Remove corresponding apps from All-Apps
+                final Callbacks callbacks = getCallback();
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        Callbacks cb = getCallback();
+                        if (callbacks == cb && cb != null) {
+                            callbacks.bindAppInfosRemoved(removemodified);
+                        }
+                    }
+                });
+            }
+            //Add by zhaopenglin for markfolder 20180508 end
+
             // Notify launcher of widget update. From marshmallow onwards we use AppWidgetHost to
             // get widget update signals.
             if (!Utilities.ATLEAST_MARSHMALLOW &&
-                    (mOp == OP_ADD || mOp == OP_REMOVE || mOp == OP_UPDATE)) {
+                    (mOp == OP_ADD || mOp == OP_REMOVE || mOp == OP_UPDATE
+                            || mOp == OP_REMOVE_UPDATE)) {//Add by zhaopenglin for mark folder 20180508
                 final Callbacks callbacks = getCallback();
                 mHandler.post(new Runnable() {
                     public void run() {

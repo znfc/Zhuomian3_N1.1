@@ -752,7 +752,8 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return ((itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT ||
                 itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) &&
-                    !isFull());
+                    (!isFull()||
+                        mInfo.rank == LauncherSettings.Favorites.MARK_FOLDER ));//Add by zhaopenglin for markfolder 20180508
     }
 
     public void onDragEnter(DragObject d) {
@@ -989,6 +990,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     @Override
     public boolean supportsFlingToDelete() {
+        if(mInfo.rank == 64 ) return false;//Add by zhaopenglin for mark folder 20180508
         return true;
     }
 

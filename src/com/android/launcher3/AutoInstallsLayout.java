@@ -271,6 +271,11 @@ public class AutoInstallsLayout {
         mValues.put(Favorites.CELLY,
                 convertToDistanceFromEnd(getAttributeValue(parser, ATTR_Y), mRowCount));
 
+        //Add by zhaopenglin for markfolder 20180504 begin
+        mValues.put(Favorites.RANK,
+                convertToDistanceFromEnd(getAttributeValue(parser, ATTR_RANK), 0) != null ? Favorites.MARK_FOLDER+"" :"0");
+        //Add by zhaopenglin for markfolder 20180504 end
+
         TagParser tagParser = tagParserMap.get(parser.getName());
         if (tagParser == null) {
             if (LOGD) Log.d(TAG, "Ignoring unknown element tag: " + parser.getName());

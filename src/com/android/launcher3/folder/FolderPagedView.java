@@ -414,6 +414,7 @@ public class FolderPagedView extends PagedView {
     }
 
     public boolean isFull() {
+        if(mFolder.mInfo.rank == 64) return true;//Add by zhaopenglin for markfolder 20180508
         return !ALLOW_FOLDER_SCROLL && getItemCount() >= mMaxItemsPerPage;
     }
 

@@ -215,6 +215,13 @@ public class LauncherSettings {
          */
         public static final int ITEM_TYPE_DEEP_SHORTCUT = 6;
 
+        //Add by zhaopenglin for markfolder 20180508 begin
+        /**
+         * Add by zhaopenglin 这个是用来标记是否是标记了的文件夹
+         */
+        public static final int MARK_FOLDER = 64;
+        //Add by zhaopenglin for markfolder 20180508 end
+
         /**
          * The appWidgetId of the widget
          *

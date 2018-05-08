@@ -64,6 +64,14 @@ public class DeleteDropTarget extends ButtonDropTarget {
 
     @Override
     protected boolean supportsDrop(DragSource source, ItemInfo info) {
+        //Add by zhaopenglin for markfolder 20180508 begin
+        if(info instanceof FolderInfo) {
+            return info.rank != LauncherSettings.Favorites.MARK_FOLDER;
+        }
+        if(source instanceof Folder){
+            return((Folder)source).mInfo.rank != LauncherSettings.Favorites.MARK_FOLDER;
+        }
+        //Add by zhaopenglin for markfolder 20180508 end
         return true;
     }
 
