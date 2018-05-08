@@ -996,6 +996,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     @Override
     public boolean supportsAppInfoDropTarget() {
+        if(mInfo.rank == 64 ) return false;//Add by zhaopenglin for mark folder 20180508
         return !FeatureFlags.LAUNCHER3_LEGACY_WORKSPACE_DND;
     }
 

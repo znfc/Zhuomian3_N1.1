@@ -3283,11 +3283,11 @@ public class LauncherModel extends BroadcastReceiver
                                 for(AppInfo appInfo : added){
                                     if(appInfo.componentName != null
                                             && linkiconPackage.contains(appInfo.componentName.getPackageName())){//判断安装的应用是否是linkicon应用
-
                                         if(si.iconResource != null && si.iconResource.resourceName.contains("lq_linkic")){//粗略判断是否有要更新的shortcut
                                             for(int i = 0;i < linkiconPackage.size();i++) {
                                                 if(linkiconPackage.get(i).equals(appInfo.componentName.getPackageName())){//找到对应更新的应用index
                                                     if(si.iconResource.resourceName.contains(linkiconName.get(i))) {//找到对应更新的shortcut
+                                                        si.itemType = LauncherSettings.Favorites.ITEM_TYPE_APPLICATION;
                                                         si.intent = appInfo.intent;
                                                         si.updateIcon(mIconCache);
                                                         si.contentDescription = appInfo.contentDescription;
@@ -3333,6 +3333,8 @@ public class LauncherModel extends BroadcastReceiver
                                 if(linkiconPackage.contains(packagestr)){
                                     for(int i = 0;i < linkiconPackage.size();i++) {
                                         if(linkiconPackage.get(i).equals(packagestr)){
+
+
                                             si.iconResource = ShortcutIconResource.fromContext(context,linkiconresource[i]);
                                             if ((si.iconResource != null)) {
                                                 Bitmap icon = Utilities.createIconBitmap(
@@ -3343,6 +3345,7 @@ public class LauncherModel extends BroadcastReceiver
                                                     shortcutUpdated = true;
                                                 }
                                             }
+                                            si.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
                                             si.intent = new Intent(Intent.ACTION_VIEW, null).setData(Uri.parse("https://www.baidu.com"));
                                             removeShortcutUpdate = true;
                                             break;

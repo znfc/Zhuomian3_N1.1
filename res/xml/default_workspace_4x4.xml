@@ -65,6 +65,11 @@
             launcher:className="com.jrzheng.supervpn.view.MainActivity"
             launcher:screen="0"/>
 
+        <favorite
+            launcher:packageName="com.android.chrome"
+            launcher:className="com.google.android.apps.chrome.Main"
+            launcher:screen="0"/>
+
         <shortcut
             launcher:icon="@drawable/lq_linkic_supervpn"
             launcher:title="@string/work_folder_name"
