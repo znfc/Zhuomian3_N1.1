@@ -13,6 +13,7 @@ import android.util.Pair;
 import android.widget.Toast;
 
 import com.android.launcher3.compat.UserHandleCompat;
+import com.android.launcher3.folder.Folder;
 
 public class UninstallDropTarget extends ButtonDropTarget {
 
@@ -35,6 +36,15 @@ public class UninstallDropTarget extends ButtonDropTarget {
 
     @Override
     protected boolean supportsDrop(DragSource source, ItemInfo info) {
+        //Add by zhaopenglin for markfolder 20180508 begin
+        /**
+         * 有的icon长按没有弹出菜单直接进入拖拽模式，那这个时候就会显示出“卸载”字样
+         * 这个判断是不让在markfolder文件夹里拖拽的item显示出“卸载”的字样
+         */
+        if(source instanceof Folder){
+            return((Folder)source).mInfo.rank != LauncherSettings.Favorites.MARK_FOLDER;
+        }
+        //Add by zhaopenglin for markfolder 20180508 end
         return supportsDrop(getContext(), info);
     }
 
