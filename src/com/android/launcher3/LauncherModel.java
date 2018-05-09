@@ -2147,6 +2147,11 @@ public class LauncherModel extends BroadcastReceiver
 
                                 folderInfo.rank = c.getInt(rankIndex);//Add by zhaopenglin for markfolder 20180508
 
+                                //Add by zhaopenglin for markfolder 20180509 begin
+                                if(folderInfo.rank == LauncherSettings.Favorites.MARK_FOLDER){
+                                    LauncherSettings.Favorites.MARK_FOLDER_ID = folderInfo.id;
+                                }
+                                //Add by zhaopenglin for markfolder 20180509 end
                                 // check & update map of what's occupied
                                 if (!checkItemPlacement(occupied, folderInfo, sBgWorkspaceScreens)) {
                                     itemsToRemove.add(id);
@@ -3261,6 +3266,7 @@ public class LauncherModel extends BroadcastReceiver
                             boolean infoUpdated = false;
                             boolean shortcutUpdated = false;
                             boolean removeShortcutUpdate = false;//Add by zhaopenglin for markfolder 20180508
+                            boolean removeShortcut = false;//Add by zhaopenglin for markfolder 20180509
 
                             // Update shortcuts which use iconResource.
                             if ((si.iconResource != null)
@@ -3333,7 +3339,15 @@ public class LauncherModel extends BroadcastReceiver
                                 if(linkiconPackage.contains(packagestr)){
                                     for(int i = 0;i < linkiconPackage.size();i++) {
                                         if(linkiconPackage.get(i).equals(packagestr)){
-
+                                            //Add by zhaopenglin for markfolder 20180509 begin
+                                            //添加这个主要是为了在桌面上卸载RJIO应用的时候把除了markfolder里之外的shortcut都删除掉
+                                            Log.i("zhao55","si.container:"+si.container+",:"+LauncherSettings.Favorites.MARK_FOLDER_ID+",removeShortcut:"+removeShortcut);
+                                            if(si.container != LauncherSettings.Favorites.MARK_FOLDER_ID){
+                                                removedShortcuts.add(si);
+                                                removeShortcut = true;
+                                                break;
+                                            }
+                                            //Add by zhaopenglin for markfolder 20180509 begin
 
                                             si.iconResource = ShortcutIconResource.fromContext(context,linkiconresource[i]);
                                             if ((si.iconResource != null)) {
@@ -3351,6 +3365,7 @@ public class LauncherModel extends BroadcastReceiver
                                             break;
                                         }
                                     }
+                                    if(removeShortcut) continue;
                                 }
                             }
                             //Add by zhaopenglin for mark folder 20180508 end

@@ -223,6 +223,10 @@ public class LauncherSettings {
         //Add by zhaopenglin for markfolder 20180508 end
 
         /**
+         * 这个主要是为了记录markfolder的ID
+         */
+        public static long MARK_FOLDER_ID;//Add by zhaopenglin for markfolder 20180509
+        /**
          * The appWidgetId of the widget
          *
          * <P>Type: INTEGER</P>
